@@ -1,13 +1,14 @@
 from AudioMetrics import *
 import colorsys
 import random
+import pygame_gui
 
 def random_colour():
-    print("HERE")
     h, s, l = random.random(), 0.5 + random.random() / 2.0, 0.4 + random.random() / 5.0
     return [int(256 * i) for i in colorsys.hls_to_rgb(h, l, s)]
 
-file_name = "test_song.wav"
+# librosa only supports WAV, FLAC, and OGG files
+file_name = "bojack.wav"
 
 metrics = AudioMetrics()
 metrics.config(file_name)
@@ -95,6 +96,25 @@ for g in bars_tmp:
 pygame.mixer.music.load(file_name)
 pygame.mixer.music.play(0)
 
+def string_to_int_array(input_text):
+    int_array = input_text.split(',')
+    int_array = [int(x.strip()) for x in int_array]
+    return int_array
+
+# gui
+
+settings_screen_width = int(info.current_w / 2.2)
+settings_screen_height = int(info.current_h / 2.2)
+settings_window_size = (settings_screen_width, settings_screen_height)
+gui_manager = pygame_gui.UIManager(settings_window_size)
+
+hello_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((0, 0), (100, 50)), text='Say Hello', manager=gui_manager)
+
+colour_text_box = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Rect((0, 50), (100, 50)), manager=gui_manager)
+colour_preview_size = 25
+colour_preview_rect = pygame.Rect(100, 60, colour_preview_size, colour_preview_size)
+colour_preview_colour = polygon_colour_default
+
 running = True
 while running:
     bass_average = 0
@@ -108,6 +128,17 @@ while running:
     for e in pygame.event.get():
         if e.type == pygame.QUIT:
             running = False
+
+        if e.type == pygame_gui.UI_BUTTON_PRESSED:
+            if e.ui_element == hello_button:
+                print('Hello world!')
+
+        if e.type == pygame.KEYDOWN and e.key == pygame.K_RETURN:
+            print(colour_text_box.text)
+            polygon_colour_default = string_to_int_array(colour_text_box.text)
+            colour_preview_colour = string_to_int_array(colour_text_box.text)
+
+        gui_manager.process_events(e)
 
     for a in bars:
         for b in a:
@@ -164,6 +195,11 @@ while running:
 
     pygame.draw.polygon(screen, poly_colour, poly)
     pygame.draw.circle(screen, circle_colour, (circle_x, circle_y), int(radius))
+
+    pygame.draw.rect(screen, colour_preview_colour, colour_preview_rect)
+
+    gui_manager.update(delta_time)
+    gui_manager.draw_ui(screen)
 
     pygame.display.flip()
 
