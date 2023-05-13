@@ -17,4 +17,6 @@ There are pleny of customization options on the left. If you are unsure what the
 
 For the colours, the format is r, g, b. E.g: "32, 10, 115" (without the quotes). Inputting anything else simply won't do anything.
 
-
+# Getting .wav Files
+There are a few sample songs in the repository, but if you want to use your own, I recommend finding your song on YouTube, and then using a YouTube to WAV converter. This one works well: https://y2down.cc/en/youtube-wav.html
+If you have an mp3 that you want to convert to a WAV file, this website works great: https://cloudconvert.com/mp3-to-wav
