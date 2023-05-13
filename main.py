@@ -2,13 +2,18 @@ from AudioMetrics import *
 import colorsys
 import random
 import pygame_gui
+import tkinter as tk
+from tkinter import filedialog
 
 def random_colour():
     h, s, l = random.random(), 0.5 + random.random() / 2.0, 0.4 + random.random() / 5.0
     return [int(256 * i) for i in colorsys.hls_to_rgb(h, l, s)]
 
 # librosa only supports WAV, FLAC, and OGG files
-file_name = "bojack.wav"
+root = tk.Tk()
+root.withdraw()
+
+file_name = filedialog.askopenfilename()
 
 metrics = AudioMetrics()
 metrics.config(file_name)
@@ -25,7 +30,8 @@ time = 0
 circle_colour = (0, 0, 0)
 
 poly = []
-polygon_colour_default = [52, 32, 150]
+#polygon_colour_default = [52, 32, 150]
+polygon_colour_default = [50, 205, 50]
 polygon_bass_colour = polygon_colour_default.copy()
 poly_colour = polygon_colour_default.copy()
 polygon_colour_vel = [0, 0, 0]
