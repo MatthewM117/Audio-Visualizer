@@ -1,6 +1,8 @@
 # Audio-Visualizer
 An audio visualizer that displays cool and unique patterns in sync to your music!
 
+Created with python, using librosa for the audio analysis and pygame for the visuals.
+
 # How to Use
 1. Download this repository to your computer
 2. Cd into the repo
