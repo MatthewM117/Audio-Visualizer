@@ -167,7 +167,10 @@ custom_radius_text = font.render("Custom Radius (0-300):", True, (255, 255, 255)
 
 custom_bg_text = font.render("Change Background Colour (r, g, b):", True, (255, 255, 255))
 
-default_angle = 90
+custom_width_text = font.render("Change Width:", True, (255, 255, 255))
+
+default_angle = 0
+default_width = 10
 
 angle_slider = pygame_gui.elements.UIHorizontalSlider(
     relative_rect=pygame.Rect((0, 225), (200, 50)),
@@ -183,6 +186,13 @@ radius_slider = pygame_gui.elements.UIHorizontalSlider(
     manager=gui_manager
 )
 
+width_slider = pygame_gui.elements.UIHorizontalSlider(
+    relative_rect=pygame.Rect((0, 600), (200, 50)),
+    start_value=default_width,
+    value_range=(0, 500),
+    manager=gui_manager
+)
+
 # settings
 
 show_circle = True
@@ -190,8 +200,11 @@ morph = False
 custom_angle = 0 # in degrees
 custom_radius = -1 # -1 means use default radius
 show_random_colours = True
+show_settings = True
+bar_width = 10
 
 prev = custom_angle
+prev_width = bar_width
 first_time = True
 
 custom_angle = default_angle
@@ -217,6 +230,12 @@ while running:
             elif e.ui_element == toggle_random_colours_button:
                 show_random_colours = not show_random_colours
 
+        elif e.type == pygame.KEYDOWN and e.key == pygame.K_h:
+            show_settings = not show_settings
+
+        elif e.type == pygame.KEYDOWN and e.key == pygame.K_q:
+            running = False
+
         elif e.type == pygame.KEYDOWN and e.key == pygame.K_RETURN:
             #print(colour_text_box.text)
             if colour_text_box.is_focused:
@@ -224,7 +243,6 @@ while running:
                 if isinstance(rgb_list, list):
                     if all(isinstance(x, int) for x in rgb_list):
                         polygon_colour_default = rgb_list
-                        colour_preview_colour = rgb_list
                     else:
                         print("invalid colour")
                 else:
@@ -330,7 +348,7 @@ while running:
             gr = []
             for c in g:
                 gr.append(
-                    RotatedMeanSoundbar(circle_x + radius * math.cos(math.radians(angle - 90)), circle_y + radius * math.sin(math.radians(angle - 90)), c, (255, 0, 255), angle=angle, width=8, max_height=370))
+                    RotatedMeanSoundbar(circle_x + radius * math.cos(math.radians(angle - 90)), circle_y + radius * math.sin(math.radians(angle - 90)), c, (255, 0, 255), angle=angle, width=bar_width, max_height=370))
                     #RotatedMeanSoundbar(0, 0, c, 0, 0, width=8, max_height=370))
                 if custom_angle == 0:
                     angle += random.uniform(0, 360)
@@ -342,10 +360,15 @@ while running:
 
     custom_angle = angle_slider.get_current_value()
     custom_radius = radius_slider.get_current_value()
+    bar_width = width_slider.get_current_value()
     if custom_angle != prev and not first_time:
+        morph = True
+    
+    if bar_width != prev_width and not first_time:
         morph = True
 
     prev = custom_angle
+    prev_width = bar_width
     first_time = False
 
     pygame.draw.polygon(screen, poly_colour, poly)
@@ -353,17 +376,23 @@ while running:
 
     pygame.draw.rect(screen, colour_preview_colour, colour_preview_rect)
 
-    gui_manager.update(delta_time)
-    gui_manager.draw_ui(screen)
+    if show_settings:
+        gui_manager.update(delta_time)
+        gui_manager.draw_ui(screen)
 
-    # draw al the text
-    screen.blit(text_surface, (0, 30))
-    screen.blit(customization_title, (0, 0))
-    screen.blit(custom_angle_title, (0, 280))
-    screen.blit(angle_slider_text, (0, 205))
-    screen.blit(radius_slider_text, (0, 355))
-    screen.blit(custom_radius_text, (0, 430))
-    screen.blit(custom_bg_text, (0, 505))
+        # draw all the text
+        screen.blit(text_surface, (0, 30))
+        screen.blit(customization_title, (0, 0))
+        screen.blit(custom_angle_title, (0, 280))
+        screen.blit(angle_slider_text, (0, 205))
+        screen.blit(radius_slider_text, (0, 355))
+        screen.blit(custom_radius_text, (0, 430))
+        screen.blit(custom_bg_text, (0, 505))
+        screen.blit(custom_width_text, (0, 580))
+
+        colour_preview_colour = polygon_colour_default
+    else:
+        colour_preview_colour = background_colour
 
     pygame.display.flip()
 
