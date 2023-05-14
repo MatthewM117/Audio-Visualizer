@@ -17,6 +17,9 @@ root.withdraw()
 
 file_name = filedialog.askopenfilename()
 
+song_name_one = file_name.split('.')
+song_name = song_name_one[0].split('/')
+
 with contextlib.closing(wave.open(file_name,'r')) as f:
     frames = f.getnframes()
     rate = f.getframerate()
@@ -234,7 +237,7 @@ def convert_to_minutes(seconds):
     seconds = seconds % 60
     return f"{minutes:02d}:{seconds:02d}"
 
-def draw_progress_bar(current_time, song_length):
+def draw_progress_bar(current_time, song_length, song_title):
     progress = current_time / song_length
 
     bar_progress = int(progress * pb_width)
@@ -256,6 +259,12 @@ def draw_progress_bar(current_time, song_length):
     total_time_text = font.render(convert_to_minutes(song_length), True, [255, 255, 255])
     total_time_rect = total_time_text.get_rect()
     total_time_rect.center = ((pb_x + pb_width) - 30, pb_y + pb_height - 30)
+    screen.blit(total_time_text, total_time_rect)
+
+    # Draw song name
+    total_time_text = font.render(song_title[-1].replace('_', ' '), True, [255, 255, 255])
+    total_time_rect = total_time_text.get_rect()
+    total_time_rect.center = (pb_x + 60, pb_y + pb_height - 30)
     screen.blit(total_time_text, total_time_rect)
 
 running = True
@@ -455,7 +464,7 @@ while running:
         screen.blit(custom_bg_text, (0, 505))
         screen.blit(custom_width_text, (settings_screen_width - 250, 30))
 
-        draw_progress_bar(time, duration)
+        draw_progress_bar(time, duration, song_name)
 
         colour_preview_colour = polygon_colour_default
     else:
