@@ -134,6 +134,7 @@ gui_manager = pygame_gui.UIManager(settings_window_size)
 
 toggle_circle_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((0, 100), (200, 50)), text='Toggle Circular Shape', manager=gui_manager)
 toggle_random_colours_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((0, 150), (200, 50)), text='Toggle Random Colours', manager=gui_manager)
+toggle_randomize_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((0, 650), (200, 50)), text='Toggle Randomize', manager=gui_manager)
 
 # colour input box
 
@@ -169,27 +170,27 @@ custom_bg_text = font.render("Change Background Colour (r, g, b):", True, (255, 
 
 custom_width_text = font.render("Change Width:", True, (255, 255, 255))
 
-default_angle = 0
-default_width = 10
+default_angle = random.uniform(0, 360)
+default_width = random.uniform(0, 500)
 
 angle_slider = pygame_gui.elements.UIHorizontalSlider(
     relative_rect=pygame.Rect((0, 225), (200, 50)),
     start_value=default_angle,
-    value_range=(0, 360),
+    value_range=(0.0, 360.0),
     manager=gui_manager
 )
 
 radius_slider = pygame_gui.elements.UIHorizontalSlider(
     relative_rect=pygame.Rect((0, 375), (200, 50)),
     start_value=radius,
-    value_range=(0, 300),
+    value_range=(0.0, 300.0),
     manager=gui_manager
 )
 
 width_slider = pygame_gui.elements.UIHorizontalSlider(
     relative_rect=pygame.Rect((0, 600), (200, 50)),
     start_value=default_width,
-    value_range=(0, 500),
+    value_range=(0.0, 500.0),
     manager=gui_manager
 )
 
@@ -202,6 +203,7 @@ custom_radius = -1 # -1 means use default radius
 show_random_colours = True
 show_settings = True
 bar_width = 10
+randomize = False
 
 prev = custom_angle
 prev_width = bar_width
@@ -209,6 +211,8 @@ first_time = True
 
 custom_angle = default_angle
 morph = True
+
+change_angle_debounce = False
 
 running = True
 while running:
@@ -229,6 +233,8 @@ while running:
                 show_circle = not show_circle
             elif e.ui_element == toggle_random_colours_button:
                 show_random_colours = not show_random_colours
+            elif e.ui_element == toggle_randomize_button:
+                randomize = not randomize
 
         elif e.type == pygame.KEYDOWN and e.key == pygame.K_h:
             show_settings = not show_settings
@@ -291,17 +297,32 @@ while running:
         if (pygame.time.get_ticks() - bass_trigger_started) / 1000.0 > 2:
             if show_random_colours:
                 polygon_bass_colour = random_colour()
+            else:
+                polygon_bass_colour = polygon_colour_default
             bass_trigger_started = 0
 
         if polygon_bass_colour is None:
             if show_random_colours:
                 polygon_bass_colour = random_colour()
+            else:
+                polygon_bass_colour = polygon_colour_default
+            change_angle_debounce = False
         
         new_radius = min_radius + int(bass_average * ((max_radius - min_radius) / (max_decibel - min_decibel)) + (max_radius - min_radius))
         radius_vel = (new_radius - radius) / 0.15
 
-        if show_random_colours:
-            polygon_colour_vel = [(polygon_bass_colour[x] - poly_colour[x]) / 0.15 for x in range(len(poly_colour))]
+        if not change_angle_debounce and randomize:
+            change_angle_debounce = True
+            custom_angle = random.uniform(0, 360)
+            angle_slider.set_current_value(custom_angle, False)
+            bar_width = random.uniform(0, 500)
+            width_slider.set_current_value(bar_width, False)
+            custom_radius = random.uniform(0, 300)
+            radius_slider.set_current_value(custom_radius, False)
+            morph = True
+
+        #if show_random_colours:
+        polygon_colour_vel = [(polygon_bass_colour[x] - poly_colour[x]) / 0.15 for x in range(len(poly_colour))]
     
     elif radius > min_radius:
         bass_trigger_started = 0
