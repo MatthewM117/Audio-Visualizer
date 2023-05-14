@@ -4,16 +4,23 @@ import random
 import pygame_gui
 import tkinter as tk
 from tkinter import filedialog
+import wave
+import contextlib
 
 def random_colour():
     h, s, l = random.random(), 0.5 + random.random() / 2.0, 0.4 + random.random() / 5.0
     return [int(256 * i) for i in colorsys.hls_to_rgb(h, l, s)]
 
-# librosa only supports WAV, FLAC, and OGG files
+# librosa only supports WAV files
 root = tk.Tk()
 root.withdraw()
 
 file_name = filedialog.askopenfilename()
+
+with contextlib.closing(wave.open(file_name,'r')) as f:
+    frames = f.getnframes()
+    rate = f.getframerate()
+    duration = frames / float(rate)
 
 metrics = AudioMetrics()
 metrics.config(file_name)
@@ -214,6 +221,43 @@ morph = True
 
 change_angle_debounce = False
 
+# time progress bar
+pb_width = 300
+pb_height = 20
+pb_x = screen_width - 320
+pb_y = screen_height - 50
+pb_bg = [169, 169, 169]
+pb_fg = [211, 211, 211]
+
+def convert_to_minutes(seconds):
+    minutes = seconds // 60
+    seconds = seconds % 60
+    return f"{minutes:02d}:{seconds:02d}"
+
+def draw_progress_bar(current_time, song_length):
+    progress = current_time / song_length
+
+    bar_progress = int(progress * pb_width)
+
+    pygame.draw.rect(screen, pb_bg, (pb_x, pb_y, pb_width, pb_height)) # background bar
+
+    pygame.draw.rect(screen, pb_fg, (pb_x, pb_y, bar_progress, pb_height)) # duration bar
+
+    # Draw the current time
+    current_time = math.floor(current_time)
+    font = pygame.font.Font(None, 25)
+    current_time_text = font.render(convert_to_minutes(current_time), True, [255, 255, 255])
+    current_time_rect = current_time_text.get_rect()
+    current_time_rect.center = (pb_x + bar_progress, pb_y + pb_height + 10)
+    screen.blit(current_time_text, current_time_rect)
+
+    # Draw the total time
+    song_length = math.floor(song_length)
+    total_time_text = font.render(convert_to_minutes(song_length), True, [255, 255, 255])
+    total_time_rect = total_time_text.get_rect()
+    total_time_rect.center = ((pb_x + pb_width) - 30, pb_y + pb_height - 30)
+    screen.blit(total_time_text, total_time_rect)
+
 running = True
 while running:
     bass_average = 0
@@ -410,6 +454,8 @@ while running:
         screen.blit(custom_radius_text, (0, 430))
         screen.blit(custom_bg_text, (0, 505))
         screen.blit(custom_width_text, (settings_screen_width - 250, 30))
+
+        draw_progress_bar(time, duration)
 
         colour_preview_colour = polygon_colour_default
     else:
