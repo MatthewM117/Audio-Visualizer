@@ -134,7 +134,7 @@ gui_manager = pygame_gui.UIManager(settings_window_size)
 
 toggle_circle_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((0, 100), (200, 50)), text='Toggle Circular Shape', manager=gui_manager)
 toggle_random_colours_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((0, 150), (200, 50)), text='Toggle Random Colours', manager=gui_manager)
-toggle_randomize_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((0, 650), (200, 50)), text='Toggle Randomize', manager=gui_manager)
+toggle_randomize_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((settings_screen_width - 250, 100), (200, 50)), text='Toggle Randomize', manager=gui_manager)
 
 # colour input box
 
@@ -188,7 +188,7 @@ radius_slider = pygame_gui.elements.UIHorizontalSlider(
 )
 
 width_slider = pygame_gui.elements.UIHorizontalSlider(
-    relative_rect=pygame.Rect((0, 600), (200, 50)),
+    relative_rect=pygame.Rect((settings_screen_width - 250, 50), (200, 50)),
     start_value=default_width,
     value_range=(0.0, 500.0),
     manager=gui_manager
@@ -409,7 +409,7 @@ while running:
         screen.blit(radius_slider_text, (0, 355))
         screen.blit(custom_radius_text, (0, 430))
         screen.blit(custom_bg_text, (0, 505))
-        screen.blit(custom_width_text, (0, 580))
+        screen.blit(custom_width_text, (settings_screen_width - 250, 30))
 
         colour_preview_colour = polygon_colour_default
     else:
