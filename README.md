@@ -31,3 +31,15 @@ Each time you run the program, each of the options will be randomized.
 There are a few songs that come with the repository ("Bojack's Theme" by Patrick and Ralph Carney, "Death by Glamour" by Toby Fox, and an original song I made), but if you want to use your own, I recommend finding your song on YouTube, and then using a YouTube to WAV converter. This one works well: https://y2down.cc/en/youtube-wav.html
 
 If you have an mp3 (or any other music file type) that you want to convert to a WAV file, this website works great: https://cloudconvert.com/mp3-to-wav
+
+# Previews
+
+![](images/preview_3.png)
+
+![](images/preview_2.png)
+
+![](images/preview_5.png)
+
+![](images/preview_4.png)
+
+![](images/preview_1.png)
