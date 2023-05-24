@@ -85,16 +85,6 @@ class AudioMetrics:
 
         self.frequency_ratio = len(frequencies)/frequencies[len(frequencies) - 1]
 
-    def show(self):
-        '''
-        display the spectrogram/pyplot
-        '''
-        librosa.display.specshow(self.spectrogram, y_axis='log', x_axis='time')
-        pyplot.title("spectrogram")
-        pyplot.colorbar(format='%+2.0f dB')
-        pyplot.tight_layout()
-        pyplot.show()
-
     def get_db(self, time, frequency):
         '''
         return the specified decibel
